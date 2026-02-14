@@ -19,16 +19,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Respect reduced motion preference (shorter loader)
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const loaderDelay = prefersReducedMotion ? 400 : 2500;
+
 window.addEventListener('load', () => {
     setTimeout(() => {
         const loader = document.getElementById('loader');
         loader.classList.add('hidden');
         initAnimations();
-    }, 2500);
+    }, loaderDelay);
 });
 
 // ========== THREE.JS 3D BACKGROUND ==========
 (function initThreeJS() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const canvas = document.getElementById('bg-canvas');
+        if (canvas) canvas.style.display = 'none';
+        return;
+    }
     const canvas = document.getElementById('bg-canvas');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -782,6 +791,23 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 })();
 
 
+// ========== BACK TO TOP ==========
+(function initBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+
+    function toggle() {
+        if (window.scrollY > 400) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    }
+
+    window.addEventListener('scroll', toggle, { passive: true });
+    toggle();
+})();
+
 // ========== PERFORMANCE: REDUCE ANIMATIONS ON LOW-END DEVICES ==========
 (function checkPerformance() {
     if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
@@ -790,3 +816,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         if (canvas) canvas.style.display = 'none';
     }
 })();
+
+// ========== CONTACT FORM: SUCCESS MESSAGE (Formspree redirect) ==========
+// If you use Formspree's redirect, the form will go to your thank-you page.
+// Optional: handle form submit via JS and show a message without redirect:
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('.contact-form');
+    if (!form || !form.action.includes('formspree')) return;
+    form.addEventListener('submit', function (e) {
+        const btn = this.querySelector('[type="submit"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>Sending...</span>';
+        }
+    });
+});

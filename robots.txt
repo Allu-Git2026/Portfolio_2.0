@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Optional: add your sitemap URL after deploying (e.g. GitHub Pages)
+# Sitemap: https://allu-git2026.github.io/Portfolio_2.0/sitemap.xml
